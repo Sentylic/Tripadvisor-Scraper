@@ -31,7 +31,7 @@ class ReviewsSpider(scrapy.Spider):
 
     def parse(self, response):
         self.driver.get(response.url)
-        next_page = self.driver.find_element_by_xpath('//div[@class="pageNumbers"]/span[contains(@class,"current")]/following-sibling::span[1]')
+        next_page = self.driver.find_element_by_xpath('//div[@class="pageNumbers"]/a[contains(@class,"current")]/following-sibling::a[1]')
         while next_page is not None:
             more = self.driver.find_elements_by_xpath("//p[@class='partial_entry']/span")
             for x in range(0,len(more)):
@@ -51,10 +51,10 @@ class ReviewsSpider(scrapy.Spider):
                     'tagline': review.css('span.noQuotes::text').extract_first(),
                     'review_title': review.css('span.noQuotes::text').extract_first(),
                     'review_body': review.css('p.partial_entry::text').extract_first(),
-                    'review_date': review.xpath('//*[@class="ratingDate relativeDate"]/@title')[idx].extract(),
+                    'review_date': review.xpath('//*[@class="ratingDate"]/@title')[idx].extract(),
                     'num_reviews_reviewer': review.css('span.badgetext::text').extract_first(),
                     'reviewer_name': review.css('span.scrname::text').extract_first(),
-                    'bubble_rating': review.xpath("//div[contains(@class, 'reviewItemInline')]//span[contains(@class, 'ui_bubble_rating')]/@class")[idx].re(r'(?<=ui_bubble_rating bubble_).+?(?=0)')
+                    'bubble_rating': review.xpath("//div[contains(@class, 'review-container')]//span[contains(@class, 'ui_bubble_rating')]/@class")[idx].re(r'(?<=ui_bubble_rating bubble_).+?(?=0)')
                 }
 
             next_page.click()
@@ -64,7 +64,7 @@ class ReviewsSpider(scrapy.Spider):
             except:
                 pass
             try:
-                next_page = self.driver.find_element_by_xpath('//div[@class="pageNumbers"]/span[contains(@class,"current")]/following-sibling::span[1]')
+                next_page = self.driver.find_element_by_xpath('//div[@class="pageNumbers"]/a[contains(@class,"current")]/following-sibling::a[1]')
             except:
                 pass
         self.driver.close()
